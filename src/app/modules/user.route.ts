@@ -9,4 +9,6 @@ router.get("/api/users", UserControllers.getAllUser);
 
 router.get("/api/users/:userId", UserControllers.getUser);
 
+router.delete("/api/users/:userId", UserControllers.deleteUser);
+
 export const UserRoutes = router;
