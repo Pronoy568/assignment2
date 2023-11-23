@@ -119,10 +119,36 @@ const updateUser = async (req: Request, res: Response) => {
   }
 };
 
+const addProduct = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const { orders } = req.body;
+
+    const result = await UserServices.addProductFromDB(Number(userId), orders);
+
+    res.status(200).json({
+      success: true,
+      message: "Order created successfully!",
+      data: result.upsertedId,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || "Something went wrong !!!",
+      error: {
+        code: 404,
+        description: err.message,
+      },
+    });
+  }
+};
+
 export const UserControllers = {
   createUser,
   getAllUser,
   getUser,
   deleteUser,
   updateUser,
+  addProduct,
 };

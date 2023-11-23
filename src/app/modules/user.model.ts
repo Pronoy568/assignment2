@@ -36,7 +36,7 @@ const userSchema = new Schema<TUser>({
   isActive: { type: Boolean, required: true },
   hobbies: { type: [String], required: true },
   address: { type: addressSchema, required: true },
-  orders: { type: ordersSchema },
+  orders: { type: [ordersSchema] },
 });
 
 // pre middleware
@@ -51,10 +51,12 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// post middleware
-userSchema.post("save", function (doc, next) {
-  doc.password = "";
-  next();
+// transform in the schema using toJSON
+userSchema.set("toJSON", {
+  transform: function (doc, ret) {
+    delete ret.password;
+    return ret;
+  },
 });
 
 // creating a custom static method
