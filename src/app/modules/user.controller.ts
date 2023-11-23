@@ -57,7 +57,10 @@ const getUser = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: err.message || "Something went wrong !!!",
-      error: err,
+      error: {
+        code: 404,
+        description: err.message,
+      },
     });
   }
 };

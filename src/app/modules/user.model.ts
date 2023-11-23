@@ -1,5 +1,11 @@
 import { Schema, model } from "mongoose";
-import { TAddress, TFullName, TOrders, TUser } from "./user.interface";
+import {
+  TAddress,
+  TFullName,
+  TOrders,
+  TUser,
+  UserModel,
+} from "./user.interface";
 import bcrypt from "bcrypt";
 import config from "../config";
 
@@ -51,4 +57,11 @@ userSchema.post("save", function (doc, next) {
   next();
 });
 
-export const User = model<TUser>("User", userSchema);
+// creating a custom static method
+userSchema.statics.isUserExists = async function (userId: number) {
+  const existingUser = await User.findOne({ userId });
+
+  return existingUser;
+};
+
+export const User = model<TUser, UserModel>("User", userSchema);
