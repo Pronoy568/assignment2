@@ -29,9 +29,28 @@ const deleteUserFromDB = async (userId: number) => {
   }
 };
 
+const updateUserFromDB = async (
+  userId: number,
+  updatedField: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  updatedValue: any
+) => {
+  if (await User.isUserExists(userId)) {
+    const updateObject = { $set: { [updatedField]: updatedValue } };
+    const result = await User.findOneAndUpdate({ userId }, updateObject, {
+      new: true,
+      runValidators: true,
+    });
+    return result;
+  } else {
+    throw new Error("User not found");
+  }
+};
+
 export const UserServices = {
   createUserInfoDB,
   getAllUsersFromDB,
   getUserFromDB,
   deleteUserFromDB,
+  updateUserFromDB,
 };

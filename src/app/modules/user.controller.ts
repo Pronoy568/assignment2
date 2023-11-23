@@ -90,9 +90,39 @@ const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
+const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const { field, value } = req.body;
+
+    const result = await UserServices.updateUserFromDB(
+      Number(userId),
+      field,
+      value
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully!",
+      data: result,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || "Something went wrong !!!",
+      error: {
+        code: 404,
+        description: err.message,
+      },
+    });
+  }
+};
+
 export const UserControllers = {
   createUser,
   getAllUser,
   getUser,
   deleteUser,
+  updateUser,
 };
