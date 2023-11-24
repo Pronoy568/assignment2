@@ -161,7 +161,6 @@ const addProduct = async (req: Request, res: Response) => {
       // Use orders as TOrders[]
       const typedOrders: TOrders[] = orders;
 
-      // Use typedOrders in your business logic (replace with your actual logic)
       const result = await UserServices.addProductFromDB(
         Number(userId),
         typedOrders
