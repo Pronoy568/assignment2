@@ -29,7 +29,7 @@ export const userValidationSchema = z.object({
   password: z
     .string()
     .min(1, { message: "password is required" })
-    .max(12, { message: "Password can not be more than 12 character" }),
+    .max(20, { message: "Password can not be more than 20 character" }),
   fullName: fullNameValidationSchema,
   age: z.number().min(1, { message: "Age is required" }),
   email: z.string().email().min(1, { message: "Email is required" }),

@@ -11,7 +11,7 @@ app.use(cors());
 app.use("/", UserRoutes);
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("All is Done !!!!");
+  res.send("Sending response !!!");
 });
 
 export default app;

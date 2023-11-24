@@ -47,7 +47,7 @@ const updateUserFromDB = async (
   }
 };
 
-const addProductFromDB = async (userId: number, orderData: TOrders) => {
+const addProductFromDB = async (userId: number, orderData: TOrders[]) => {
   if (await User.isUserExists(userId)) {
     const result = await User.updateOne(
       { userId: userId },
@@ -78,6 +78,34 @@ const getProductFromDB = async (userId: number) => {
   }
 };
 
+const getTotalPriceFromDB = async (userId: number) => {
+  if (await User.isUserExists(userId)) {
+    const OrderFind = await User.findOne({ userId });
+    const OrderData = OrderFind?.orders;
+
+    const result = {
+      orders: OrderData?.map((order) => ({
+        price: order.price,
+        quantity: order.quantity,
+      })),
+    };
+
+    const totalPrice = result?.orders
+      ? parseFloat(
+          result.orders
+            .reduce((total, order) => {
+              return total + order.price * order.quantity;
+            }, 0)
+            .toFixed(2)
+        )
+      : "";
+
+    return totalPrice;
+  } else {
+    throw new Error("User not found");
+  }
+};
+
 export const UserServices = {
   createUserInfoDB,
   getAllUsersFromDB,
@@ -86,4 +114,5 @@ export const UserServices = {
   updateUserFromDB,
   addProductFromDB,
   getProductFromDB,
+  getTotalPriceFromDB,
 };

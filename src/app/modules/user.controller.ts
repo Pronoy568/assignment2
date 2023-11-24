@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { userValidationSchema } from "./user.validation";
 import { UserServices } from "./user.services";
+import { TOrders } from "./user.interface";
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -75,7 +76,7 @@ const deleteUser = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: "User deleted successfully!",
-      data: result,
+      data: result.deletedCount === 1 ? null : "",
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
@@ -124,13 +125,48 @@ const addProduct = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const { orders } = req.body;
 
-    const result = await UserServices.addProductFromDB(Number(userId), orders);
+    if (
+      Array.isArray(orders) &&
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      orders.every((order: any): order is TOrders => {
+        return (
+          typeof order === "object" &&
+          order !== null &&
+          "productName" in order &&
+          "price" in order &&
+          "quantity" in order &&
+          typeof order.productName === "string" &&
+          typeof order.price === "number" &&
+          typeof order.quantity === "number"
+        );
+      })
+    ) {
+      // Use orders as TOrders[]
+      const typedOrders: TOrders[] = orders;
 
-    res.status(200).json({
-      success: true,
-      message: "Order created successfully!",
-      data: result.upsertedId,
-    });
+      // Use typedOrders in your business logic (replace with your actual logic)
+      const result = await UserServices.addProductFromDB(
+        Number(userId),
+        typedOrders
+      );
+
+      res.status(200).json({
+        success: true,
+        message: "Order created successfully!",
+        data: result.upsertedId,
+      });
+    } else {
+      // Handle the case where orders doesn't have the expected structure
+      res.status(400).json({
+        success: false,
+        message: "Invalid orders format in the request body.",
+        error: {
+          code: 404,
+          description: "Invalid orders type!",
+        },
+      });
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     res.status(500).json({
@@ -168,6 +204,32 @@ const getProduct = async (req: Request, res: Response) => {
   }
 };
 
+const getTotalPrice = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+
+    const result = await UserServices.getTotalPriceFromDB(Number(userId));
+
+    res.status(200).json({
+      success: true,
+      message: "Total price calculated successfully!",
+      data: {
+        totalPrice: result,
+      },
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || "Something went wrong !!!",
+      error: {
+        code: 404,
+        description: err.message,
+      },
+    });
+  }
+};
+
 export const UserControllers = {
   createUser,
   getAllUser,
@@ -176,4 +238,5 @@ export const UserControllers = {
   updateUser,
   addProduct,
   getProduct,
+  getTotalPrice,
 };
