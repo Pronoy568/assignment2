@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { userValidationSchema } from "./user.validation";
 import { UserServices } from "./user.services";
-import { TOrders } from "./user.interface";
+import { TOrders, TUser } from "./user.interface";
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -94,19 +94,36 @@ const deleteUser = async (req: Request, res: Response) => {
 const updateUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const { field, value } = req.body;
+    const updatedValue: TUser = req.body;
 
-    const result = await UserServices.updateUserFromDB(
-      Number(userId),
-      field,
-      value
-    );
+    if (
+      !updatedValue ||
+      !updatedValue.userId ||
+      !updatedValue.username ||
+      !updatedValue.fullName.firstName ||
+      !updatedValue.fullName.lastName ||
+      !updatedValue.age ||
+      !updatedValue.email ||
+      !updatedValue.isActive ||
+      !updatedValue.hobbies ||
+      !updatedValue.address.city ||
+      !updatedValue.address.country ||
+      !updatedValue.address.street
+    ) {
+      throw new Error("Invalid data !!!");
+    } else {
+      const result = await UserServices.updateUserFromDB(
+        Number(userId),
+        updatedValue
+      );
 
-    res.status(200).json({
-      success: true,
-      message: "User updated successfully!",
-      data: result,
-    });
+      res.status(200).json({
+        success: true,
+        message: "User updated successfully!",
+        data: result,
+      });
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     res.status(500).json({
