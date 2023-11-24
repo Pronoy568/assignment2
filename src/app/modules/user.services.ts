@@ -59,6 +59,25 @@ const addProductFromDB = async (userId: number, orderData: TOrders) => {
   }
 };
 
+const getProductFromDB = async (userId: number) => {
+  if (await User.isUserExists(userId)) {
+    const OrderFind = await User.findOne({ userId });
+    const OrderData = OrderFind?.orders;
+
+    const result = {
+      orders: OrderData?.map((order) => ({
+        productName: order.productName,
+        price: order.price,
+        quantity: order.quantity,
+      })),
+    };
+
+    return result;
+  } else {
+    throw new Error("User not found");
+  }
+};
+
 export const UserServices = {
   createUserInfoDB,
   getAllUsersFromDB,
@@ -66,4 +85,5 @@ export const UserServices = {
   deleteUserFromDB,
   updateUserFromDB,
   addProductFromDB,
+  getProductFromDB,
 };

@@ -15,4 +15,6 @@ router.put("/api/users/:userId", UserControllers.updateUser);
 
 router.put("/api/users/:userId/orders", UserControllers.addProduct);
 
+router.get("/api/users/:userId/orders", UserControllers.getProduct);
+
 export const UserRoutes = router;

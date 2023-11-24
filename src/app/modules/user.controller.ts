@@ -144,6 +144,30 @@ const addProduct = async (req: Request, res: Response) => {
   }
 };
 
+const getProduct = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+
+    const result = await UserServices.getProductFromDB(Number(userId));
+
+    res.status(200).json({
+      success: true,
+      message: "Order fetched successfully!",
+      data: result,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || "Something went wrong !!!",
+      error: {
+        code: 404,
+        description: err.message,
+      },
+    });
+  }
+};
+
 export const UserControllers = {
   createUser,
   getAllUser,
@@ -151,4 +175,5 @@ export const UserControllers = {
   deleteUser,
   updateUser,
   addProduct,
+  getProduct,
 };
