@@ -45,7 +45,7 @@ const updateUserFromDB = async (
   }
 };
 
-const addProductFromDB = async (userId: number, orderData: TOrders[]) => {
+const addProductFromDB = async (userId: number, orderData: TOrders) => {
   if (await User.isUserExists(userId)) {
     const result = await User.updateOne(
       { userId: userId },

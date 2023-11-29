@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { userValidationSchema } from "./user.validation";
 import { UserServices } from "./user.services";
-import { TOrders, TUser } from "./user.interface";
+import { TUser } from "./user.interface";
 
 const createUser = async (req: Request, res: Response) => {
   try {
-    const { user: userData } = req.body;
+    const userData = req.body;
 
     const parsedData = userValidationSchema.parse(userData);
     const result = await UserServices.createUserInfoDB(parsedData);
@@ -140,30 +140,12 @@ const updateUser = async (req: Request, res: Response) => {
 const addProduct = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const { orders } = req.body;
+    const orders = req.body;
 
-    if (
-      Array.isArray(orders) &&
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      orders.every((order: any): order is TOrders => {
-        return (
-          typeof order === "object" &&
-          order !== null &&
-          "productName" in order &&
-          "price" in order &&
-          "quantity" in order &&
-          typeof order.productName === "string" &&
-          typeof order.price === "number" &&
-          typeof order.quantity === "number"
-        );
-      })
-    ) {
-      // Use orders as TOrders[]
-      const typedOrders: TOrders[] = orders;
-
+    if (orders.productName && orders.price && orders.quantity) {
       const result = await UserServices.addProductFromDB(
         Number(userId),
-        typedOrders
+        orders
       );
 
       res.status(200).json({
