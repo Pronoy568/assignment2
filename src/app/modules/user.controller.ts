@@ -96,33 +96,16 @@ const updateUser = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const updatedValue: TUser = req.body;
 
-    if (
-      !updatedValue ||
-      !updatedValue.userId ||
-      !updatedValue.username ||
-      !updatedValue.fullName.firstName ||
-      !updatedValue.fullName.lastName ||
-      !updatedValue.age ||
-      !updatedValue.email ||
-      !updatedValue.isActive ||
-      !updatedValue.hobbies ||
-      !updatedValue.address.city ||
-      !updatedValue.address.country ||
-      !updatedValue.address.street
-    ) {
-      throw new Error("Invalid data !!!");
-    } else {
-      const result = await UserServices.updateUserFromDB(
-        Number(userId),
-        updatedValue
-      );
+    const result = await UserServices.updateUserFromDB(
+      Number(userId),
+      updatedValue
+    );
 
-      res.status(200).json({
-        success: true,
-        message: "User updated successfully!",
-        data: result,
-      });
-    }
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully!",
+      data: result,
+    });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
@@ -142,28 +125,13 @@ const addProduct = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const orders = req.body;
 
-    if (orders.productName && orders.price && orders.quantity) {
-      const result = await UserServices.addProductFromDB(
-        Number(userId),
-        orders
-      );
+    const result = await UserServices.addProductFromDB(Number(userId), orders);
 
-      res.status(200).json({
-        success: true,
-        message: "Order created successfully!",
-        data: result.upsertedId,
-      });
-    } else {
-      // Handle the case where orders doesn't have the expected structure
-      res.status(400).json({
-        success: false,
-        message: "Invalid orders format in the request body.",
-        error: {
-          code: 404,
-          description: "Invalid orders type!",
-        },
-      });
-    }
+    res.status(200).json({
+      success: true,
+      message: "Order created successfully!",
+      data: result.upsertedId,
+    });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
